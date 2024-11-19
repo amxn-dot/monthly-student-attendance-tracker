@@ -25,10 +25,10 @@ export default function AttendanceMarking({
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
-  const toggleAttendance = (studentId: string) => {
+  const markAttendance = (studentId: string, isPresent: boolean) => {
     setAttendance((prev) => ({
       ...prev,
-      [studentId]: !prev[studentId],
+      [studentId]: isPresent,
     }));
   };
 
@@ -63,7 +63,7 @@ export default function AttendanceMarking({
               <TableHead>Roll Number</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Class</TableHead>
-              <TableHead>Attendance</TableHead>
+              <TableHead className="text-center">Mark Attendance</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -73,17 +73,26 @@ export default function AttendanceMarking({
                 <TableCell>{student.name}</TableCell>
                 <TableCell>{student.class}</TableCell>
                 <TableCell>
-                  <Button
-                    variant={attendance[student.id] ? "default" : "destructive"}
-                    size="sm"
-                    onClick={() => toggleAttendance(student.id)}
-                  >
-                    {attendance[student.id] ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <X className="h-4 w-4" />
-                    )}
-                  </Button>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant={attendance[student.id] ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => markAttendance(student.id, true)}
+                      className="w-24"
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Present
+                    </Button>
+                    <Button
+                      variant={attendance[student.id] === false ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() => markAttendance(student.id, false)}
+                      className="w-24"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Absent
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
