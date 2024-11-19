@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -12,9 +12,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { CalendarDays, TrendingUp } from 'lucide-react';
 import { Student, AttendanceRecord, MonthlyAttendance } from '@/types';
-import { Progress } from '@/components/ui/progress';
 
 interface AttendanceHistoryProps {
   students: Student[];
