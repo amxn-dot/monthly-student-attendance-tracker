@@ -11,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CalendarDays, TrendingUp } from 'lucide-react';
@@ -26,8 +33,16 @@ export default function AttendanceHistory({
   attendance,
 }: AttendanceHistoryProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedClass, setSelectedClass] = useState<string>('all');
+  
   const currentMonth = selectedDate ? selectedDate.getMonth() : new Date().getMonth();
   const currentYear = selectedDate ? selectedDate.getFullYear() : new Date().getFullYear();
+
+  const uniqueClasses = Array.from(new Set(students.map(student => student.class))).sort();
+
+  const filteredStudents = selectedClass === 'all'
+    ? students
+    : students.filter(student => student.class === selectedClass);
 
   const getAttendanceForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
@@ -103,9 +118,27 @@ export default function AttendanceHistory({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Attendance statistics for {monthName} {currentYear}
-            </p>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Attendance statistics for {monthName} {currentYear}
+              </p>
+              <Select
+                value={selectedClass}
+                onValueChange={setSelectedClass}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter by class" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Classes</SelectItem>
+                  {uniqueClasses.map((className) => (
+                    <SelectItem key={className} value={className}>
+                      {className}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -137,7 +170,7 @@ export default function AttendanceHistory({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((student) => {
+                {filteredStudents.map((student) => {
                   const record = selectedDateRecords.find(
                     (r) => r.studentId === student.id
                   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,36 @@ export default function Index() {
   const [password, setPassword] = useState('');
   const { toast } = useToast();
 
-  // Add the missing handler functions
+  // Load stored data on component mount
+  useEffect(() => {
+    const storedStudents = localStorage.getItem('students');
+    const storedAttendance = localStorage.getItem('attendance');
+    
+    if (storedStudents) {
+      setStudents(JSON.parse(storedStudents));
+    }
+    if (storedAttendance) {
+      setAttendance(JSON.parse(storedAttendance));
+    }
+  }, []);
+
+  // Save data whenever it changes
+  useEffect(() => {
+    localStorage.setItem('students', JSON.stringify(students));
+  }, [students]);
+
+  useEffect(() => {
+    localStorage.setItem('attendance', JSON.stringify(attendance));
+  }, [attendance]);
+
   const handleStudentRegistration = (student: Student) => {
     setStudents((prev) => [...prev, student]);
     console.log('New student registered:', student);
+  };
+
+  const handleStudentDelete = (studentId: string) => {
+    setStudents((prev) => prev.filter(student => student.id !== studentId));
+    setAttendance((prev) => prev.filter(record => record.studentId !== studentId));
   };
 
   const handleAttendanceSubmit = (records: AttendanceRecord[]) => {
@@ -164,7 +190,11 @@ export default function Index() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="register">
-          <StudentRegistration onRegister={handleStudentRegistration} />
+          <StudentRegistration 
+            onRegister={handleStudentRegistration}
+            onDelete={handleStudentDelete}
+            students={students}
+          />
         </TabsContent>
         <TabsContent value="attendance">
           <AttendanceMarking 
