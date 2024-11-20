@@ -13,7 +13,14 @@ import DashboardLayout from "./components/DashboardLayout";
 import { api } from "./lib/api";
 import { useToast } from "./components/ui/use-toast";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -28,15 +35,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   const { toast } = useToast();
   
-  const { data: students = [] } = useQuery({
+  const { data: students = [], isLoading: isLoadingStudents } = useQuery({
     queryKey: ['students'],
     queryFn: api.getStudents,
   });
 
-  const { data: attendance = [] } = useQuery({
+  const { data: attendance = [], isLoading: isLoadingAttendance } = useQuery({
     queryKey: ['attendance'],
     queryFn: api.getAttendance,
   });
+
+  console.log('Students data:', students); // Debug log
 
   const handleStudentUpdate = async (student: any) => {
     try {
@@ -73,17 +82,25 @@ const AppRoutes = () => {
     }
   };
 
+  if (isLoadingStudents || isLoadingAttendance) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/dashboard" element={
         <ProtectedRoute>
-          <Dashboard />
+          <DashboardLayout>
+            <Dashboard />
+          </DashboardLayout>
         </ProtectedRoute>
       } />
       <Route path="/students" element={
         <ProtectedRoute>
-          <StudentsPage />
+          <DashboardLayout>
+            <StudentsPage />
+          </DashboardLayout>
         </ProtectedRoute>
       } />
       <Route path="/attendance" element={
