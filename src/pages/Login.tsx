@@ -26,26 +26,24 @@ export default function Login() {
     }
 
     if (isLoginMode) {
-      // Get stored credentials
       const storedEmail = localStorage.getItem('signupEmail');
       const storedUsername = localStorage.getItem('signupUsername');
       const storedPassword = localStorage.getItem('signupPassword');
 
-      // Check if either email or username matches along with password
       const isEmailValid = email && email === storedEmail;
       const isUsernameValid = username && username === storedUsername;
       const isPasswordValid = password === storedPassword;
 
       if ((isEmailValid || isUsernameValid) && isPasswordValid) {
         localStorage.setItem('isAuthenticated', 'true');
-        navigate('/dashboard');
+        navigate('/attendance');
         toast({
           title: "Welcome to AttenEase",
           description: "Logged in successfully",
         });
       } else if ((email === "admin@attenease.com" || username === "admin") && password === "admin") {
         localStorage.setItem('isAuthenticated', 'true');
-        navigate('/dashboard');
+        navigate('/attendance');
         toast({
           title: "Welcome to AttenEase",
           description: "Admin logged in successfully",
@@ -58,7 +56,6 @@ export default function Login() {
         });
       }
     } else {
-      // Store signup credentials
       localStorage.setItem('signupEmail', email);
       localStorage.setItem('signupUsername', username);
       localStorage.setItem('signupPassword', password);
@@ -131,4 +128,4 @@ export default function Login() {
       </div>
     </div>
   );
-};
+}
