@@ -26,13 +26,29 @@ export default function Login() {
     }
 
     if (isLoginMode) {
-      // Simulate login with either username or email
-      if ((email === "admin@attenease.com" || username === "admin") && password === "admin") {
+      // Get stored credentials
+      const storedEmail = localStorage.getItem('signupEmail');
+      const storedUsername = localStorage.getItem('signupUsername');
+      const storedPassword = localStorage.getItem('signupPassword');
+
+      // Check if either email or username matches along with password
+      const isEmailValid = email && email === storedEmail;
+      const isUsernameValid = username && username === storedUsername;
+      const isPasswordValid = password === storedPassword;
+
+      if ((isEmailValid || isUsernameValid) && isPasswordValid) {
         localStorage.setItem('isAuthenticated', 'true');
         navigate('/dashboard');
         toast({
           title: "Welcome to AttenEase",
           description: "Logged in successfully",
+        });
+      } else if ((email === "admin@attenease.com" || username === "admin") && password === "admin") {
+        localStorage.setItem('isAuthenticated', 'true');
+        navigate('/dashboard');
+        toast({
+          title: "Welcome to AttenEase",
+          description: "Admin logged in successfully",
         });
       } else {
         toast({
