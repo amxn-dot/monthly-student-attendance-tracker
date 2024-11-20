@@ -16,6 +16,7 @@ export default function Index() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { toast } = useToast();
 
@@ -68,22 +69,21 @@ export default function Index() {
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Simple validation
-    if (!email || !password) {
+    if ((!email && !username) || !password) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please fill in all required fields",
       });
       return;
     }
 
     if (isLoginMode) {
-      // Simulate login
-      if (email === "admin@attenease.com" && password === "admin") {
+      // Simulate login with either username or email
+      if ((email === "admin@attenease.com" || username === "admin") && password === "admin") {
         setIsAuthenticated(true);
         toast({
-          title: "Success",
+          title: "Welcome to SmartAttend",
           description: "Logged in successfully",
         });
       } else {
@@ -95,30 +95,47 @@ export default function Index() {
       }
     } else {
       // Simulate signup
+      if (!username) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Username is required for registration",
+        });
+        return;
+      }
       setIsAuthenticated(true);
       toast({
-        title: "Success",
+        title: "Welcome to SmartAttend",
         description: "Account created successfully",
       });
     }
 
     setEmail('');
+    setUsername('');
     setPassword('');
   };
 
   if (!isAuthenticated) {
     return (
       <div className="container mx-auto py-8">
-        <h1 className="text-4xl font-bold text-center mb-8">AttenEase</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">SmartAttend</h1>
         <p className="text-center text-muted-foreground mb-8">
-          Smart Attendance Management System
+          Intelligent Attendance Management System
         </p>
         
         <div className="max-w-md mx-auto">
           <form onSubmit={handleAuth} className="space-y-4">
+            {!isLoginMode && (
+              <Input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            )}
             <Input
-              type="email"
-              placeholder="Email"
+              type="text"
+              placeholder={isLoginMode ? "Email or Username" : "Email"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
