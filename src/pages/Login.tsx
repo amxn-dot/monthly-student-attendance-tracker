@@ -36,6 +36,7 @@ export default function Login() {
 
       if ((isEmailValid || isUsernameValid) && isPasswordValid) {
         localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('adminName', username || email.split('@')[0]);
         navigate('/attendance');
         toast({
           title: "Welcome to AttenEase",
@@ -43,6 +44,7 @@ export default function Login() {
         });
       } else if ((email === "admin@attenease.com" || username === "admin") && password === "admin") {
         localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('adminName', 'Administrator');
         navigate('/attendance');
         toast({
           title: "Welcome to AttenEase",
