@@ -70,15 +70,15 @@ export default function AttendanceMarking({
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
         <CardTitle>Mark Attendance</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-col md:flex-row gap-4 mb-4 mt-4">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[240px] justify-start text-left font-normal">
+              <Button variant="outline" className="w-full md:w-[240px] justify-start text-left font-normal bg-white">
                 <Calendar className="mr-2 h-4 w-4" />
                 {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
               </Button>
@@ -97,7 +97,7 @@ export default function AttendanceMarking({
             value={selectedClass}
             onValueChange={setSelectedClass}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px] bg-white">
               <SelectValue placeholder="Select class" />
             </SelectTrigger>
             <SelectContent>
@@ -111,53 +111,66 @@ export default function AttendanceMarking({
           </Select>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Roll Number</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Class</TableHead>
-              <TableHead className="text-center">Mark Attendance</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredStudents.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.rollNumber}</TableCell>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>{student.class}</TableCell>
-                <TableCell>
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant={attendance[student.id] ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => markAttendance(student.id, true)}
-                      className="w-24"
-                    >
-                      <Check className="h-4 w-4 mr-1" />
-                      Present
-                    </Button>
-                    <Button
-                      variant={attendance[student.id] === false ? "destructive" : "outline"}
-                      size="sm"
-                      onClick={() => markAttendance(student.id, false)}
-                      className="w-24"
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Absent
-                    </Button>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-purple-100/50">
+                <TableHead className="font-semibold">Roll Number</TableHead>
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold hidden md:table-cell">Class</TableHead>
+                <TableHead className="font-semibold text-center">Attendance</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredStudents.map((student) => (
+                <TableRow key={student.id} className="hover:bg-purple-50/50">
+                  <TableCell className="font-medium">{student.rollNumber}</TableCell>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell className="hidden md:table-cell">{student.class}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-center gap-2">
+                      <Button
+                        variant={attendance[student.id] ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => markAttendance(student.id, true)}
+                        className={`w-full md:w-24 ${
+                          attendance[student.id] 
+                            ? "bg-green-500 hover:bg-green-600" 
+                            : "bg-white hover:bg-green-50"
+                        }`}
+                      >
+                        <Check className="h-4 w-4 md:mr-1" />
+                        <span className="hidden md:inline">Present</span>
+                      </Button>
+                      <Button
+                        variant={attendance[student.id] === false ? "destructive" : "outline"}
+                        size="sm"
+                        onClick={() => markAttendance(student.id, false)}
+                        className={`w-full md:w-24 ${
+                          attendance[student.id] === false 
+                            ? "bg-red-500 hover:bg-red-600" 
+                            : "bg-white hover:bg-red-50"
+                        }`}
+                      >
+                        <X className="h-4 w-4 md:mr-1" />
+                        <span className="hidden md:inline">Absent</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
         {filteredStudents.length > 0 ? (
-          <Button onClick={handleSubmit} className="mt-4">
+          <Button 
+            onClick={handleSubmit} 
+            className="mt-4 w-full md:w-auto bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+          >
             Submit Attendance
           </Button>
         ) : (
-          <p className="text-center py-4 text-muted-foreground">
+          <p className="text-center py-4 text-muted-foreground bg-purple-50/50 rounded-lg mt-4">
             {students.length === 0 ? "No students registered yet." : "No students found in selected class."}
           </p>
         )}
