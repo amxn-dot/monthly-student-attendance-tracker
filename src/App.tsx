@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "@/components/error-boundary";
 import { api } from "@/lib/api";
+import { Student } from "@/types";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StudentsPage from "./pages/StudentsPage";
@@ -51,9 +52,9 @@ const AppContent = () => {
     queryClient.invalidateQueries({ queryKey: ['attendance'] });
   };
 
-  const handleStudentUpdate = async (studentId: string, data: any) => {
+  const handleStudentUpdate = async (student: Student) => {
+    console.log('Updating student:', student);
     // Implement student update logic here
-    console.log('Updating student:', studentId, data);
     queryClient.invalidateQueries({ queryKey: ['students'] });
   };
 
