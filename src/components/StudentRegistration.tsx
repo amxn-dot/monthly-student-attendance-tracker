@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Trash2 } from 'lucide-react';
+import { Trash2, UserPlus, Search } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -28,6 +28,7 @@ export default function StudentRegistration({
 }: StudentRegistrationProps) {
   const { register, handleSubmit, reset } = useForm<Omit<Student, 'id'>>();
   const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const onSubmit = (data: Omit<Student, 'id'>) => {
     const newStudent: Student = {
@@ -39,84 +40,114 @@ export default function StudentRegistration({
     toast({
       title: "Success",
       description: "Student registered successfully",
+      className: "bg-green-500 text-white",
     });
     reset();
   };
 
+  const filteredStudents = students.filter(student => 
+    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.class.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Register New Student</CardTitle>
+    <div className="space-y-6 animate-fade-in">
+      <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2">
+            <UserPlus className="h-6 w-6" />
+            Register New Student
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input
                 placeholder="Student Name"
+                className="border-purple-200 focus:border-purple-500 transition-colors"
                 {...register('name', { required: true })}
               />
-            </div>
-            <div>
               <Input
                 placeholder="Roll Number"
+                className="border-purple-200 focus:border-purple-500 transition-colors"
                 {...register('rollNumber', { required: true })}
               />
-            </div>
-            <div>
               <Input
                 placeholder="Class"
+                className="border-purple-200 focus:border-purple-500 transition-colors"
                 {...register('class', { required: true })}
               />
             </div>
-            <Button type="submit">Register Student</Button>
+            <Button 
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105"
+            >
+              Register Student
+            </Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-purple-200 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
           <CardTitle>Registered Students</CardTitle>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search students..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 border-purple-200 focus:border-purple-500 transition-colors"
+            />
+          </div>
         </CardHeader>
         <CardContent>
-          {students.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Roll Number</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {students.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell>{student.rollNumber}</TableCell>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.class}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => {
-                          onDelete(student.id);
-                          toast({
-                            title: "Success",
-                            description: "Student deleted successfully",
-                          });
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+          {filteredStudents.length > 0 ? (
+            <div className="rounded-lg overflow-hidden border border-purple-200">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-purple-50">
+                    <TableHead>Roll Number</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Class</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student) => (
+                    <TableRow 
+                      key={student.id}
+                      className="hover:bg-purple-50 transition-colors"
+                    >
+                      <TableCell>{student.rollNumber}</TableCell>
+                      <TableCell>{student.name}</TableCell>
+                      <TableCell>{student.class}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => {
+                            onDelete(student.id);
+                            toast({
+                              title: "Success",
+                              description: "Student deleted successfully",
+                              className: "bg-red-500 text-white",
+                            });
+                          }}
+                          className="hover:bg-red-600 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
-            <p className="text-center py-4 text-muted-foreground">
-              No students registered yet.
+            <p className="text-center py-8 text-gray-500 bg-purple-50 rounded-lg">
+              No students found.
             </p>
           )}
         </CardContent>

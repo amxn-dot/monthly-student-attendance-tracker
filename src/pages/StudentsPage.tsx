@@ -1,12 +1,10 @@
-import StudentRegistration from '@/components/StudentRegistration';
-import { useState, useEffect } from 'react';
-import { Student } from '@/types';
-import { useToast } from '@/components/ui/use-toast';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from "@/components/DashboardLayout";
+import StudentRegistration from "@/components/StudentRegistration";
+import { Student } from "@/types";
+import { useState, useEffect } from "react";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     const storedStudents = localStorage.getItem('students');
@@ -15,22 +13,21 @@ export default function StudentsPage() {
     }
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('students', JSON.stringify(students));
-  }, [students]);
-
   const handleStudentRegistration = (student: Student) => {
-    setStudents((prev) => [...prev, student]);
-    console.log('New student registered:', student);
+    const updatedStudents = [...students, student];
+    setStudents(updatedStudents);
+    localStorage.setItem('students', JSON.stringify(updatedStudents));
   };
 
   const handleStudentDelete = (studentId: string) => {
-    setStudents((prev) => prev.filter(student => student.id !== studentId));
+    const updatedStudents = students.filter(student => student.id !== studentId);
+    setStudents(updatedStudents);
+    localStorage.setItem('students', JSON.stringify(updatedStudents));
   };
 
   return (
     <DashboardLayout>
-      <StudentRegistration 
+      <StudentRegistration
         onRegister={handleStudentRegistration}
         onDelete={handleStudentDelete}
         students={students}
