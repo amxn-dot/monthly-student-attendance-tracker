@@ -65,17 +65,17 @@ export default function StudentRegistration({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input
                 placeholder="Student Name"
-                className="border-purple-200 focus:border-purple-500 transition-colors"
+                className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
                 {...register('name', { required: true })}
               />
               <Input
                 placeholder="Roll Number"
-                className="border-purple-200 focus:border-purple-500 transition-colors"
+                className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
                 {...register('rollNumber', { required: true })}
               />
               <Input
                 placeholder="Class"
-                className="border-purple-200 focus:border-purple-500 transition-colors"
+                className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
                 {...register('class', { required: true })}
               />
             </div>
@@ -98,7 +98,7 @@ export default function StudentRegistration({
               placeholder="Search students..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-purple-200 focus:border-purple-500 transition-colors"
+              className="pl-10 border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
             />
           </div>
         </CardHeader>
@@ -107,22 +107,22 @@ export default function StudentRegistration({
             <div className="rounded-lg overflow-hidden border border-purple-200">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-purple-50">
-                    <TableHead>Roll Number</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Class</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                  <TableRow className="bg-purple-50 dark:bg-gray-800">
+                    <TableHead className="text-purple-900 dark:text-white">Roll Number</TableHead>
+                    <TableHead className="text-purple-900 dark:text-white">Name</TableHead>
+                    <TableHead className="text-purple-900 dark:text-white">Class</TableHead>
+                    <TableHead className="text-right text-purple-900 dark:text-white">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredStudents.map((student) => (
                     <TableRow 
                       key={student.id}
-                      className="hover:bg-purple-50 transition-colors"
+                      className="hover:bg-purple-50 transition-colors dark:hover:bg-gray-700 dark:text-white"
                     >
-                      <TableCell>{student.rollNumber}</TableCell>
-                      <TableCell>{student.name}</TableCell>
-                      <TableCell>{student.class}</TableCell>
+                      <TableCell className="dark:text-white">{student.rollNumber}</TableCell>
+                      <TableCell className="dark:text-white">{student.name}</TableCell>
+                      <TableCell className="dark:text-white">{student.class}</TableCell>
                       <TableCell className="text-right">
                         <Button
                           variant="destructive"
@@ -146,7 +146,7 @@ export default function StudentRegistration({
               </Table>
             </div>
           ) : (
-            <p className="text-center py-8 text-gray-500 bg-purple-50 rounded-lg">
+            <p className="text-center py-8 text-gray-500 dark:text-gray-400 bg-purple-50 dark:bg-gray-800 rounded-lg">
               No students found.
             </p>
           )}

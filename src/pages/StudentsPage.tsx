@@ -1,4 +1,3 @@
-import DashboardLayout from "@/components/DashboardLayout";
 import StudentRegistration from "@/components/StudentRegistration";
 import { Student } from "@/types";
 import { useState, useEffect } from "react";
@@ -26,12 +25,10 @@ export default function StudentsPage() {
   };
 
   return (
-    <DashboardLayout>
-      <StudentRegistration
-        onRegister={handleStudentRegistration}
-        onDelete={handleStudentDelete}
-        students={students}
-      />
-    </DashboardLayout>
+    <StudentRegistration
+      onRegister={handleStudentRegistration}
+      onDelete={handleStudentDelete}
+      students={students}
+    />
   );
 }
