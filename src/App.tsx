@@ -37,9 +37,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppContent = () => {
-  const { data: students = [] } = useQuery({
+  // Get students from localStorage if API is not available
+  const getStoredStudents = () => {
+    const storedStudents = localStorage.getItem('students');
+    return storedStudents ? JSON.parse(storedStudents) : [];
+  };
+
+  const { data: students = getStoredStudents() } = useQuery({
     queryKey: ['students'],
-    queryFn: api.getStudents,
+    queryFn: async () => {
+      try {
+        const apiStudents = await api.getStudents();
+        return apiStudents;
+      } catch (error) {
+        console.log('Error fetching students from API, using localStorage:', error);
+        return getStoredStudents();
+      }
+    },
   });
 
   const { data: attendance = [] } = useQuery({
@@ -54,9 +68,10 @@ const AppContent = () => {
 
   const handleStudentUpdate = async (student: Student) => {
     console.log('Updating student:', student);
-    // Implement student update logic here
     queryClient.invalidateQueries({ queryKey: ['students'] });
   };
+
+  console.log('Current students in AppContent:', students); // Debug log
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
