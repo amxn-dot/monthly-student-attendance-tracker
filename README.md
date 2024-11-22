@@ -1,69 +1,150 @@
-# Welcome to your Lovable project
+# Student Attendance Management System
 
-## Project info
+A comprehensive system for managing student attendance with features for student registration, attendance marking, and attendance history tracking.
 
-**URL**: https://lovable.dev/projects/a8615047-601b-424b-95f6-3820485a2f50
+## 🚀 Features
 
-## How can I edit this code?
+- Student Registration
+- Daily Attendance Marking
+- Attendance History Tracking
+- Admin Dashboard
+- Responsive Design
+- Data Visualization
 
-There are several ways of editing your application.
+## 🛠 Tech Stack
 
-**Use Lovable**
+### Frontend
+- **React**: UI library for building user interfaces
+- **TypeScript**: Static typing for JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **shadcn/ui**: High-quality UI components
+- **React Query**: Data fetching and state management
+- **React Router**: Client-side routing
+- **Recharts**: Data visualization library
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a8615047-601b-424b-95f6-3820485a2f50) and start prompting.
+### Backend
+- **Express.js**: Web application framework
+- **MongoDB**: NoSQL database
+- **Mongoose**: MongoDB object modeling
+- **TypeScript**: Type safety for backend code
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📁 Project Structure
 
-**Use your preferred IDE**
+### Frontend Components
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+#### Core Components
+- `AdminDashboard.tsx`: Main admin interface
+- `AttendanceHistory.tsx`: View and track attendance records
+- `AttendanceMarking.tsx`: Mark daily attendance
+- `StudentRegistration.tsx`: Register new students
+- `DashboardLayout.tsx`: Layout wrapper for dashboard pages
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+#### UI Components
+- `ClassFilter.tsx`: Filter students by class
+- `AttendanceCalendar.tsx`: Calendar view of attendance
+- `AttendanceTable.tsx`: Tabular view of attendance records
+- `AttendanceGraph.tsx`: Visual representation of attendance data
 
-Follow these steps:
+### Backend Structure
+- `server.ts`: Main server file
+- `models/`: Database schemas
+  - `Student.ts`: Student model
+  - `Attendance.ts`: Attendance records model
+  - `Admin.ts`: Admin user model
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🚀 Getting Started
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB installed and running
+- npm or yarn package manager
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Installation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+1. Clone the repository:
+```bash
+git clone <repository-url>
+```
+
+2. Install dependencies:
+```bash
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Install backend dependencies
+cd ../backend
+npm install
+```
+
+3. Set up environment variables:
+Create a `.env` file in the root directory with:
+```
+MONGODB_URI=mongodb://localhost:27017/attendance-system
+PORT=5000
+VITE_API_URL=http://localhost:5000/api
+```
+
+4. Start the development servers:
+
+For Backend:
+```bash
+# Navigate to server directory
+cd backend
+# Run the server with ts-node
+npx ts-node src/server/server.ts
+```
+
+For Frontend:
+```bash
+# In a new terminal, navigate to frontend directory
+cd frontend
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🔑 API Endpoints
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Authentication
+- `POST /api/auth/login`: Admin login
 
-**Use GitHub Codespaces**
+### Students
+- `GET /api/students`: Get all students
+- `POST /api/students`: Register new student
+- `DELETE /api/students/:id`: Delete student
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Attendance
+- `GET /api/attendance`: Get attendance records
+- `POST /api/attendance`: Mark attendance
 
-## What technologies are used for this project?
+## 💻 Usage
 
-This project is built with .
+1. **Admin Login**
+   - Use admin credentials to access the dashboard
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. **Student Registration**
+   - Navigate to Student Registration
+   - Fill in student details
+   - Submit the form
 
-## How can I deploy this project?
+3. **Mark Attendance**
+   - Go to Attendance Marking
+   - Select date
+   - Mark present/absent for each student
+   - Save attendance
 
-Simply open [Lovable](https://lovable.dev/projects/a8615047-601b-424b-95f6-3820485a2f50) and click on Share -> Publish.
+4. **View History**
+   - Access Attendance History
+   - View attendance records
+   - Filter by date or student
 
-## I want to use a custom domain - is that possible?
+## 🤝 Contributing
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License.
