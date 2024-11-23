@@ -38,7 +38,7 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
 // Student routes
 app.get('/api/students', async (_req: Request, res: Response) => {
   try {
-    const students = await Student.find();
+    const students = await Student.find().sort({ name: 1 }); // Sort by name ascending
     res.json(students);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -47,6 +47,20 @@ app.get('/api/students', async (_req: Request, res: Response) => {
 
 app.post('/api/students', async (req: Request, res: Response) => {
   try {
+    // Check for duplicate name or roll number
+    const existingStudent = await Student.findOne({
+      $or: [
+        { name: req.body.name },
+        { rollNumber: req.body.rollNumber }
+      ]
+    });
+
+    if (existingStudent) {
+      return res.status(400).json({ 
+        message: 'A student with this name or roll number already exists' 
+      });
+    }
+
     const student = new Student(req.body);
     await student.save();
     res.status(201).json(student);
@@ -77,8 +91,7 @@ app.get('/api/attendance', async (_req: Request, res: Response) => {
 
 app.post('/api/attendance', async (req: Request, res: Response) => {
   try {
-    const attendance = new Attendance(req.body);
-    await attendance.save();
+    const attendance = await Attendance.create(req.body);
     res.status(201).json(attendance);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
