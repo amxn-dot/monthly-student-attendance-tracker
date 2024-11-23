@@ -43,15 +43,20 @@ const AppContent = () => {
     return storedStudents ? JSON.parse(storedStudents) : [];
   };
 
-  const { data: students = getStoredStudents() } = useQuery({
+  const { data: students = [], isLoading: isLoadingStudents } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
       try {
+        console.log('Fetching students from API...');
         const apiStudents = await api.getStudents();
+        console.log('Students fetched successfully:', apiStudents);
+        localStorage.setItem('students', JSON.stringify(apiStudents));
         return apiStudents;
       } catch (error) {
         console.log('Error fetching students from API, using localStorage:', error);
-        return getStoredStudents();
+        const storedStudents = getStoredStudents();
+        console.log('Using stored students:', storedStudents);
+        return storedStudents;
       }
     },
   });
@@ -72,6 +77,10 @@ const AppContent = () => {
   };
 
   console.log('Current students in AppContent:', students); // Debug log
+
+  if (isLoadingStudents) {
+    return <div>Loading students...</div>;
+  }
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

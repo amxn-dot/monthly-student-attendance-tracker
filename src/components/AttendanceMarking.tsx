@@ -32,16 +32,20 @@ export default function AttendanceMarking({
   students,
   onSubmit,
 }: AttendanceMarkingProps) {
+  console.log('AttendanceMarking received students:', students); // Debug log
+
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const { toast } = useToast();
 
   const uniqueClasses = Array.from(new Set(students.map(student => student.class))).sort();
+  console.log('Unique classes:', uniqueClasses); // Debug log
 
   const filteredStudents = selectedClass === 'all' 
     ? students 
     : students.filter(student => student.class === selectedClass);
+  console.log('Filtered students:', filteredStudents); // Debug log
 
   const markAttendance = (studentId: string, isPresent: boolean) => {
     setAttendance((prev) => ({
@@ -51,6 +55,15 @@ export default function AttendanceMarking({
   };
 
   const handleSubmit = () => {
+    if (Object.keys(attendance).length === 0) {
+      toast({
+        title: "Error",
+        description: "Please mark attendance for at least one student",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const date = format(selectedDate, 'yyyy-MM-dd');
     const records: AttendanceRecord[] = Object.entries(attendance).map(
       ([studentId, isPresent]) => ({
@@ -68,6 +81,21 @@ export default function AttendanceMarking({
       description: "Attendance marked successfully",
     });
   };
+
+  if (!students || students.length === 0) {
+    return (
+      <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+          <CardTitle>Mark Attendance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center py-4 text-muted-foreground">
+            No students registered yet. Please add students first.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-none shadow-lg">
