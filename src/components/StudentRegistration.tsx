@@ -26,11 +26,39 @@ export default function StudentRegistration({
   onDelete,
   students 
 }: StudentRegistrationProps) {
-  const { register, handleSubmit, reset } = useForm<Omit<Student, 'id'>>();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<Omit<Student, 'id'>>();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
 
   const onSubmit = (data: Omit<Student, 'id'>) => {
+    // Check for duplicate name
+    const isDuplicateName = students.some(
+      student => student.name.toLowerCase() === data.name.toLowerCase()
+    );
+
+    // Check for duplicate roll number
+    const isDuplicateRoll = students.some(
+      student => student.rollNumber.toLowerCase() === data.rollNumber.toLowerCase()
+    );
+
+    if (isDuplicateName) {
+      toast({
+        title: "Error",
+        description: "A student with this name already exists",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (isDuplicateRoll) {
+      toast({
+        title: "Error",
+        description: "This roll number is already assigned",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newStudent: Student = {
       ...data,
       id: crypto.randomUUID(),
@@ -45,7 +73,12 @@ export default function StudentRegistration({
     reset();
   };
 
-  const filteredStudents = students.filter(student => 
+  // Sort students by name
+  const sortedStudents = [...students].sort((a, b) => 
+    a.name.localeCompare(b.name)
+  );
+
+  const filteredStudents = sortedStudents.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.class.toLowerCase().includes(searchTerm.toLowerCase())
@@ -66,19 +99,36 @@ export default function StudentRegistration({
               <Input
                 placeholder="Student Name"
                 className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
-                {...register('name', { required: true })}
+                {...register('name', { 
+                  required: "Name is required",
+                  pattern: {
+                    value: /^[A-Za-z\s]+$/,
+                    message: "Name should only contain letters and spaces"
+                  }
+                })}
               />
               <Input
                 placeholder="Roll Number"
                 className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
-                {...register('rollNumber', { required: true })}
+                {...register('rollNumber', { 
+                  required: "Roll number is required",
+                  pattern: {
+                    value: /^[A-Za-z0-9]+$/,
+                    message: "Roll number should only contain letters and numbers"
+                  }
+                })}
               />
               <Input
                 placeholder="Class"
                 className="border-purple-200 focus:border-purple-500 transition-colors dark:bg-gray-800 dark:text-white"
-                {...register('class', { required: true })}
+                {...register('class', { required: "Class is required" })}
               />
             </div>
+            {(errors.name || errors.rollNumber || errors.class) && (
+              <p className="text-red-500 text-sm">
+                {errors.name?.message || errors.rollNumber?.message || errors.class?.message}
+              </p>
+            )}
             <Button 
               type="submit"
               className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105"
