@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -9,6 +9,8 @@ import Admin from './models/Admin';
 dotenv.config();
 
 const app = express();
+const router = express.Router();
+
 app.use(cors());
 app.use(express.json());
 
@@ -18,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/attendanc
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Auth routes
-app.post('/api/auth/login', async (req: Request, res: Response) => {
+router.post('/auth/login', async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
     const admin = await Admin.findOne({
@@ -36,7 +38,7 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
 });
 
 // Student routes
-app.get('/api/students', async (_req: Request, res: Response) => {
+router.get('/students', async (_req, res) => {
   try {
     const students = await Student.find().sort({ name: 1 }); // Sort by name ascending
     res.json(students);
@@ -45,9 +47,8 @@ app.get('/api/students', async (_req: Request, res: Response) => {
   }
 });
 
-app.post('/api/students', async (req: Request, res: Response) => {
+router.post('/students', async (req, res) => {
   try {
-    // Check for duplicate name or roll number
     const existingStudent = await Student.findOne({
       $or: [
         { name: req.body.name },
@@ -69,7 +70,7 @@ app.post('/api/students', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/api/students/:id', async (req: Request, res: Response) => {
+router.delete('/students/:id', async (req, res) => {
   try {
     await Student.findByIdAndDelete(req.params.id);
     await Attendance.deleteMany({ studentId: req.params.id });
@@ -80,7 +81,7 @@ app.delete('/api/students/:id', async (req: Request, res: Response) => {
 });
 
 // Attendance routes
-app.get('/api/attendance', async (_req: Request, res: Response) => {
+router.get('/attendance', async (_req, res) => {
   try {
     const attendance = await Attendance.find().populate('studentId');
     res.json(attendance);
@@ -89,7 +90,7 @@ app.get('/api/attendance', async (_req: Request, res: Response) => {
   }
 });
 
-app.post('/api/attendance', async (req: Request, res: Response) => {
+router.post('/attendance', async (req, res) => {
   try {
     const attendance = await Attendance.create(req.body);
     res.status(201).json(attendance);
@@ -97,6 +98,9 @@ app.post('/api/attendance', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Mount the router with the /api prefix
+app.use('/api', router);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
