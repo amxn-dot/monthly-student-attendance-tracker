@@ -32,20 +32,18 @@ export default function AttendanceMarking({
   students,
   onSubmit,
 }: AttendanceMarkingProps) {
-  console.log('AttendanceMarking received students:', students); // Debug log
-
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedClass, setSelectedClass] = useState<string>('all');
   const { toast } = useToast();
 
-  const uniqueClasses = Array.from(new Set(students.map(student => student.class))).sort();
-  console.log('Unique classes:', uniqueClasses); // Debug log
+  // Sort students alphabetically
+  const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
+  const uniqueClasses = Array.from(new Set(sortedStudents.map(student => student.class))).sort();
 
   const filteredStudents = selectedClass === 'all' 
-    ? students 
-    : students.filter(student => student.class === selectedClass);
-  console.log('Filtered students:', filteredStudents); // Debug log
+    ? sortedStudents 
+    : sortedStudents.filter(student => student.class === selectedClass);
 
   const markAttendance = (studentId: string, isPresent: boolean) => {
     setAttendance((prev) => ({
@@ -55,6 +53,20 @@ export default function AttendanceMarking({
   };
 
   const handleSubmit = () => {
+    // Check for unmarked students
+    const unmarkedStudents = filteredStudents.filter(
+      student => attendance[student.id] === undefined
+    );
+
+    if (unmarkedStudents.length > 0) {
+      toast({
+        title: "Warning",
+        description: `${unmarkedStudents.length} student(s) not marked: ${unmarkedStudents.map(s => s.name).join(', ')}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (Object.keys(attendance).length === 0) {
       toast({
         title: "Error",

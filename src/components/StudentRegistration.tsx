@@ -73,7 +73,7 @@ export default function StudentRegistration({
     reset();
   };
 
-  // Sort students by name
+  // Always sort students alphabetically
   const sortedStudents = [...students].sort((a, b) => 
     a.name.localeCompare(b.name)
   );

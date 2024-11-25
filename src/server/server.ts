@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/attendanc
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Auth routes
-router.post('/auth/login', async (req, res) => {
+router.post('/auth/login', async (req: Request, res: Response) => {
   try {
     const { emailOrUsername, password } = req.body;
     const admin = await Admin.findOne({
@@ -38,7 +38,7 @@ router.post('/auth/login', async (req, res) => {
 });
 
 // Student routes
-router.get('/students', async (_req, res) => {
+router.get('/students', async (_req: Request, res: Response) => {
   try {
     const students = await Student.find().sort({ name: 1 }); // Sort by name ascending
     res.json(students);
@@ -47,7 +47,7 @@ router.get('/students', async (_req, res) => {
   }
 });
 
-router.post('/students', async (req, res) => {
+router.post('/students', async (req: Request, res: Response) => {
   try {
     const existingStudent = await Student.findOne({
       $or: [
@@ -70,7 +70,7 @@ router.post('/students', async (req, res) => {
   }
 });
 
-router.delete('/students/:id', async (req, res) => {
+router.delete('/students/:id', async (req: Request, res: Response) => {
   try {
     await Student.findByIdAndDelete(req.params.id);
     await Attendance.deleteMany({ studentId: req.params.id });
@@ -81,7 +81,7 @@ router.delete('/students/:id', async (req, res) => {
 });
 
 // Attendance routes
-router.get('/attendance', async (_req, res) => {
+router.get('/attendance', async (_req: Request, res: Response) => {
   try {
     const attendance = await Attendance.find().populate('studentId');
     res.json(attendance);
@@ -90,7 +90,7 @@ router.get('/attendance', async (_req, res) => {
   }
 });
 
-router.post('/attendance', async (req, res) => {
+router.post('/attendance', async (req: Request, res: Response) => {
   try {
     const attendance = await Attendance.create(req.body);
     res.status(201).json(attendance);
