@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -9,7 +9,7 @@ import Admin from './models/Admin';
 dotenv.config();
 
 const app = express();
-const router = express.Router();
+const router: Router = express.Router();
 
 app.use(cors());
 app.use(express.json());
