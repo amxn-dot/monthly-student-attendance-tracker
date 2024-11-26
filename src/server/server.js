@@ -1,26 +1,41 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
-
+const dotenv = require('dotenv');
 const Student = require('./models/Student');
 const Attendance = require('./models/Attendance');
 const Admin = require('./models/Admin');
 
+// Load environment variables
+dotenv.config();
+
+// Initialize express app
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/attendance-system')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/attendance-system', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
 
 // Admin routes
 app.post('/api/auth/login', async (req, res) => {
-  console.log('Login attempt:', req.body.emailOrUsername);
   try {
     const { emailOrUsername, password } = req.body;
+    console.log('Login attempt:', emailOrUsername);
+
     const admin = await Admin.findOne({
       $or: [{ email: emailOrUsername }, { username: emailOrUsername }]
     });
@@ -43,8 +58,8 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Student routes
 app.get('/api/students', async (req, res) => {
-  console.log('Fetching all students');
   try {
+    console.log('Fetching all students');
     const students = await Student.find().sort({ name: 1 });
     console.log(`Found ${students.length} students`);
     res.json(students);
@@ -55,8 +70,8 @@ app.get('/api/students', async (req, res) => {
 });
 
 app.post('/api/students', async (req, res) => {
-  console.log('Creating new student:', req.body);
   try {
+    console.log('Creating new student:', req.body);
     const existingStudent = await Student.findOne({
       $or: [
         { name: req.body.name },
@@ -82,8 +97,8 @@ app.post('/api/students', async (req, res) => {
 });
 
 app.delete('/api/students/:id', async (req, res) => {
-  console.log('Deleting student:', req.params.id);
   try {
+    console.log('Deleting student:', req.params.id);
     await Student.findByIdAndDelete(req.params.id);
     await Attendance.deleteMany({ studentId: req.params.id });
     console.log('Student and related attendance records deleted');
@@ -96,8 +111,8 @@ app.delete('/api/students/:id', async (req, res) => {
 
 // Attendance routes
 app.get('/api/attendance', async (req, res) => {
-  console.log('Fetching all attendance records');
   try {
+    console.log('Fetching all attendance records');
     const attendance = await Attendance.find().populate('studentId');
     console.log(`Found ${attendance.length} attendance records`);
     res.json(attendance);
@@ -108,8 +123,8 @@ app.get('/api/attendance', async (req, res) => {
 });
 
 app.post('/api/attendance', async (req, res) => {
-  console.log('Creating new attendance record:', req.body);
   try {
+    console.log('Creating new attendance record:', req.body);
     const attendance = new Attendance(req.body);
     await attendance.save();
     console.log('Created new attendance record:', attendance);
@@ -120,5 +135,8 @@ app.post('/api/attendance', async (req, res) => {
   }
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
