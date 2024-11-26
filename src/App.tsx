@@ -37,8 +37,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppContent = () => {
-  // Get students from localStorage if API is not available
-  const getStoredStudents = () => {
+  const getStoredStudents = (): Student[] => {
     const storedStudents = localStorage.getItem('students');
     return storedStudents ? JSON.parse(storedStudents) : [];
   };
@@ -54,29 +53,41 @@ const AppContent = () => {
         return apiStudents;
       } catch (error) {
         console.log('Error fetching students from API, using localStorage:', error);
-        const storedStudents = getStoredStudents();
-        console.log('Using stored students:', storedStudents);
-        return storedStudents;
+        return getStoredStudents();
       }
     },
   });
 
   const { data: attendance = [] } = useQuery({
     queryKey: ['attendance'],
-    queryFn: api.getAttendance,
+    queryFn: async () => {
+      try {
+        const data = await api.getAttendance();
+        return data;
+      } catch (error) {
+        console.log('Error fetching attendance from API:', error);
+        return [];
+      }
+    },
   });
 
   const handleAttendanceSubmit = async (records: any[]) => {
-    await api.markAttendance(records);
-    queryClient.invalidateQueries({ queryKey: ['attendance'] });
+    try {
+      await api.markAttendance(records);
+      queryClient.invalidateQueries({ queryKey: ['attendance'] });
+    } catch (error) {
+      console.error('Error submitting attendance:', error);
+    }
   };
 
   const handleStudentUpdate = async (student: Student) => {
-    console.log('Updating student:', student);
-    queryClient.invalidateQueries({ queryKey: ['students'] });
+    try {
+      console.log('Updating student:', student);
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    } catch (error) {
+      console.error('Error updating student:', error);
+    }
   };
-
-  console.log('Current students in AppContent:', students); // Debug log
 
   if (isLoadingStudents) {
     return <div>Loading students...</div>;
